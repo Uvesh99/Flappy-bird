@@ -1,3 +1,4 @@
+
 let board;
 let boardWidth = 720;
 let boardHeight = 620;
@@ -30,6 +31,7 @@ let gravity = 0.4;
 
 let gameOver = false;
 let score = 0;
+let gameStarted = false;
 
 let backgroundMusic;
 
@@ -40,16 +42,12 @@ window.onload = function () {
     context = board.getContext("2d");
 
     // Load background music
-    backgroundMusic = new Audio('flappy_music.mp3'); // Replace 'background_music.mp3' with your music file
+    backgroundMusic = new Audio('flappy_music.mp3');
     backgroundMusic.loop = true;
-    backgroundMusic.volume = 0.5; // Set volume (0.0 to 1.0)
-    backgroundMusic.play();
+    backgroundMusic.volume = 0.5;
 
     birdImg = new Image();
     birdImg.src = "./flappybird.png";
-    birdImg.onload = function () {
-        context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
-    }
 
     topPipeImg = new Image();
     topPipeImg.src = "./toppipe.png";
@@ -57,16 +55,32 @@ window.onload = function () {
     bottomPipeImg = new Image();
     bottomPipeImg.src = "./bottompipe.png";
 
+    // Add event listener to start game on first interaction
+    document.addEventListener("keydown", startGame);
+    document.addEventListener("click", startGame);
+}
+
+function startGame() {
+    if (!gameStarted) {
+        gameStarted = true;
+        initializeGame();
+        document.removeEventListener("keydown", startGame);
+        document.removeEventListener("click", startGame);
+    }
+}
+
+function initializeGame() {
+    backgroundMusic.play();
     requestAnimationFrame(update);
     setInterval(placePipes, 2000);
     document.addEventListener("keydown", moveBird);
 }
 
 function update() {
-    requestAnimationFrame(update);
     if (gameOver) {
         return;
     }
+
     context.clearRect(0, 0, board.width, board.height);
 
     velocityY += gravity;
@@ -102,7 +116,11 @@ function update() {
 
     if (gameOver) {
         context.fillText("GAME OVER", 5, 90);
-        backgroundMusic.pause(); // Pause background music on game over
+        backgroundMusic.pause();
+    }
+
+    if (!gameOver) {
+        requestAnimationFrame(update);
     }
 }
 
@@ -140,14 +158,18 @@ function moveBird(e) {
         velocityY = -6;
 
         if (gameOver) {
-            bird.y = birdY;
-            pipeArray = [];
-            score = 0;
-            gameOver = false;
-            backgroundMusic.currentTime = 0; // Restart music from the beginning
-            backgroundMusic.play(); // Play background music again
+            resetGame();
         }
     }
+}
+
+function resetGame() {
+    bird.y = birdY;
+    pipeArray = [];
+    score = 0;
+    gameOver = false;
+    backgroundMusic.currentTime = 0;
+    backgroundMusic.play();
 }
 
 function detectCollision(a, b) {
