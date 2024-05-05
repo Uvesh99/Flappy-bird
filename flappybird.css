@@ -1,0 +1,13 @@
+body {
+    font-family:'Courier New', Courier, monospace;
+    text-align: center;
+    background-color: rgb(93, 185, 221);
+    /* background: rgb(34,193,195);
+    background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(45,253,69,1) 100%); */
+    color: #d77b18;
+}
+
+#board {
+    
+    background-image: url("./flappybirdbg.png");
+}
